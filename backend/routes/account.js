@@ -13,15 +13,17 @@ router.post('/signup', async (req, res) => {
     }
 })
 
-router.post('/login', (req, res) => {
+router.post('/login', (req, res, next) => {
     const { username, password } = req.body
     User.findOne({ username, password }, (err, user) => {
-        if (user) {
+        if (user && !err) {
             req.session.username = username
             req.session.password = password
-            res.send('Logged in')
+            // res.send('Logged in')
+            res.json({ status: 'OK' })
         } else {
-            res.send('Failed to log in')
+            // res.send('Failed to log in')
+            next(new Error('Login Error'))
         }
     })
 })

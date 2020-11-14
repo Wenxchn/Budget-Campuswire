@@ -8,6 +8,7 @@ const MONGO_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/test'
 const path = require('path')
 const socketIO = require('socket.io')
 const http = require('http')
+const isAuthenticated = require('./middlewares/isAuthenticated')
 
 const server = http.createServer(app)
 const io = socketIO(server)
@@ -46,6 +47,10 @@ app.use(
     maxAge: 24 * 60 * 60 * 1000 //24 hours worth of miliseconds
   })
 )
+
+app.post('/isAuthenticated', isAuthenticated, (req, res) => {
+  res.json({ user: req.session.username })
+})
 
 app.use('/api', ApiRouter)
 app.use('/account', AccountRouter)

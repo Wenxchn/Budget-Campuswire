@@ -15,7 +15,7 @@ const Signup = () => {
             history.push('/')
         } catch (e) {
             console.log(e)
-            Window.alert('Failed to signup')
+            window.alert('Failed to signup')
         }
     }
 

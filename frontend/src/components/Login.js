@@ -13,9 +13,10 @@ const Login = () => {
         try {
             await axios.post('/account/login', { username, password })
             history.push('/')
+            console.log('test')
         } catch (e) {
             console.log(e)
-            Window.alert('Failed to login')
+            window.alert('Failed to login')
         }
     }
 
