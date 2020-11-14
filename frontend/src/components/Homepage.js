@@ -1,14 +1,16 @@
 import React, {useEffect, useState} from 'react'
-import { Button, Col, Form, Modal, Row } from 'react-bootstrap'
+import { Button, Card, Col, Form, Modal, Row } from 'react-bootstrap'
 import 'bootstrap/dist/css/bootstrap.min.css'
 import { useHistory } from 'react-router-dom'
-import socketIOClient from 'socket.io-client'
+// import socketIOClient from 'socket.io-client'
 import QuestionList from './QuestionList'
 import axios from 'axios'
 
-const socket = socketIOClient.connect()
+// Better method to update
+// const socket = socketIOClient.connect()
 
 const Homepage = () => {
+    let questionText, questionText2, answerText, authorText
     const [username, setUsername] = useState('')
     const [isOpen, setIsOpen] = useState(false)
     const history = useHistory()
@@ -34,7 +36,15 @@ const Homepage = () => {
 
     const addQuestion = async () => {
         try {
-            await axios.post('./api/questions/add', { questionText, username})
+            await axios.post('./api/questions/add', { questionText: questionText.value, author: username })
+        } catch (e) {
+            console.log(e)
+        }
+    }
+
+    const answerQuestion = async () => {
+        try {
+            await axios.post('./api/questions/answer', { questionText: questionText2.value, author: authorText.value, answer: answerText.value})
         } catch (e) {
             console.log(e)
         }
@@ -54,17 +64,42 @@ const Homepage = () => {
                 </Row>
                 <Button className=''style={{ width: '486px' }} onClick={() => setIsOpen(true)}> Add new question </Button>
                 <QuestionList/>
-                <Modal show={isOpen}>
+                <Modal show={isOpen} onHide={() => setIsOpen(false)}>
                     <Modal.Body>
-                        Add Question:
-                        <Form>
-                            <Form.Control as="textarea" rows={3}>
-                            </Form.Control>
+                        Add new question 
+                        <Form onSubmit={e => {
+                            e.preventDefault()
+                            addQuestion()
+                            setIsOpen(false)
+                        }}>
+                            <Form.Control as="textarea" rows={3} ref={node => questionText = node}></Form.Control>
+                            <Button block type='submit'>Submit</Button>
+                            <Button block variant='light' onClick={() => setIsOpen(false)}>Close</Button>
                         </Form>
-                        <Button block>Submit</Button>
-                        <Button block variant='light' onClick={() => setIsOpen(false)}>Close</Button>
                     </Modal.Body>
                 </Modal>
+                <Row>
+                    <Col sm='4'></Col>
+                    <Col>
+                        <Card className='border-0'>
+                            <Card.Body>
+                                <Card.Text>Answer a question. Just copy and paste the question and author before answering!</Card.Text>
+                                <Form onSubmit={e => {
+                                    e.preventDefault()
+                                    answerQuestion()
+                                }}>
+                                    <Form.Label>Question</Form.Label>
+                                    <Form.Control placeholder='Enter Question' ref={node => questionText2 = node}></Form.Control>
+                                    <Form.Label>Author</Form.Label>
+                                    <Form.Control placeholder='Enter Author' ref={node => authorText = node}></Form.Control>
+                                    <Form.Label>Answer</Form.Label>
+                                    <Form.Control placeholder='Enter Answer' as="textarea" rows={3} ref={node => answerText = node}></Form.Control>
+                                    <Button block type='submit'>Submit</Button>
+                                </Form>
+                            </Card.Body>
+                        </Card> 
+                    </Col>
+                </Row>
             </div>
         )
     } else {

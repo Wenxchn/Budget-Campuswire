@@ -1,4 +1,4 @@
-import React from 'react' 
+import React, { useEffect } from 'react' 
 import axios from 'axios'
 import { Button, Row, Card, Col } from 'react-bootstrap'
 import 'bootstrap/dist/css/bootstrap.min.css'
@@ -11,7 +11,9 @@ class QuestionList extends React.Component {
     }
 
     componentDidMount() {
-        this.renderQuestions()
+        setInterval(() => {
+            this.renderQuestions()
+        }, 1000)
     }
 
     async showQuestionDetails(e) {

@@ -6,7 +6,7 @@ import Signup from './Signup'
 import Login from './Login'
 import Homepage from './Homepage'
 
-const socket = socketIOClient.connect()
+// const socket = socketIOClient.connect()
 
 const App = () => {
     return (
