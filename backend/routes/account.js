@@ -19,10 +19,8 @@ router.post('/login', (req, res, next) => {
         if (user && !err) {
             req.session.username = username
             req.session.password = password
-            // res.send('Logged in')
             res.json({ status: 'OK' })
         } else {
-            // res.send('Failed to log in')
             next(new Error('Login Error'))
         }
     })

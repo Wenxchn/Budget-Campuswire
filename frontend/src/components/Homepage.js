@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react'
-import { Button, Col, Row } from 'react-bootstrap'
+import { Button, Col, Form, Modal, Row } from 'react-bootstrap'
 import 'bootstrap/dist/css/bootstrap.min.css'
 import { useHistory } from 'react-router-dom'
 import socketIOClient from 'socket.io-client'
@@ -8,16 +8,9 @@ import axios from 'axios'
 
 const socket = socketIOClient.connect()
 
-const logout = async () => {
-    try {
-        await axios.post('./account/logout')
-    } catch (e) {
-        console.log(e)
-    }
-}
-
 const Homepage = () => {
     const [username, setUsername] = useState('')
+    const [isOpen, setIsOpen] = useState(false)
     const history = useHistory()
     
     useEffect(async () => {
@@ -30,12 +23,22 @@ const Homepage = () => {
         }
     })
 
-    useEffect(() => {
-        const intervalID = setInterval(() => {
+    const logout = async () => {
+        try {
+            await axios.post('./account/logout')
+            setUsername('')
+        } catch (e) {
+            console.log(e)
+        }
+    }
 
-        }, 2000)
-        return () => clearInterval(intervalID)
-      }, [])
+    const addQuestion = async () => {
+        try {
+            await axios.post('./api/questions/add', { questionText, username})
+        } catch (e) {
+            console.log(e)
+        }
+    }
 
     if (username !== '') {
         return (
@@ -46,11 +49,22 @@ const Homepage = () => {
                     </Col>
                     <Col className='text-right'>
                         Username: {username} &nbsp;
-                        <Button className='float-right' onClick={() => logout()}>Logout</Button>
+                        <Button className='float-right' onClick={() => logout()}>Log out</Button>
                     </Col>
                 </Row>
-                    <Button className=''style={{ width: '486px' }}> Add new question </Button>
+                <Button className=''style={{ width: '486px' }} onClick={() => setIsOpen(true)}> Add new question </Button>
                 <QuestionList/>
+                <Modal show={isOpen}>
+                    <Modal.Body>
+                        Add Question:
+                        <Form>
+                            <Form.Control as="textarea" rows={3}>
+                            </Form.Control>
+                        </Form>
+                        <Button block>Submit</Button>
+                        <Button block variant='light' onClick={() => setIsOpen(false)}>Close</Button>
+                    </Modal.Body>
+                </Modal>
             </div>
         )
     } else {
